@@ -1,13 +1,6 @@
 name: "snyk code test"
 on: [push, pull_request]
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: List repo files
-        run: ls -la && git ls-files | head -50
-
-      - uses: snyk/actions/setup@master
-      # ...rest of your steps
 permissions:
   contents: read
   security-events: write
@@ -23,7 +16,17 @@ jobs:
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+       
+      - uses: actions/checkout@v4
+
+      - name: List repo files
+        run: ls -la && git ls-files | head -50
+
+      - uses: snyk/actions/setup@master
+      # ...rest of your steps
       - name: Upload SARIF file
+      
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk-sarif2.json
+          
