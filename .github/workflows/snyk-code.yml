@@ -1,6 +1,13 @@
 name: "snyk code test"
 on: [push, pull_request]
+    steps:
+      - uses: actions/checkout@v4
 
+      - name: List repo files
+        run: ls -la && git ls-files | head -50
+
+      - uses: snyk/actions/setup@master
+      # ...rest of your steps
 permissions:
   contents: read
   security-events: write
