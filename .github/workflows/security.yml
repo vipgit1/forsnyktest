@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      SEVERITY: high        # low | medium | high | critical
+      SEVERITY: critical        # low | medium | high | critical
 
     steps:
       - uses: actions/checkout@v4
