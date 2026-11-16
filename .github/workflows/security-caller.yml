@@ -1,0 +1,20 @@
+name: security
+
+on:
+  push:
+    branches: [ lirantal-patch-1 ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  scan:
+    uses: vipgit1/security-templates/.github/workflows/snyk-scan.yml@main
+    with:
+      severity-threshold: high
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
