@@ -1,0 +1,58 @@
+name: security
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    env:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      SEVERITY: high        # low | medium | high | critical
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: snyk/actions/setup@master
+
+      # --- Open source dependencies (SCA) ---
+      - name: Snyk Open Source
+        id: oss
+        run: snyk test --all-projects --severity-threshold=$SEVERITY --sarif-file-output=snyk-oss.sarif
+        continue-on-error: true
+
+      # --- Code analysis (SAST) ---
+      - name: Snyk Code
+        id: code
+        run: snyk code test --severity-threshold=$SEVERITY --sarif-file-output=snyk-code.sarif
+        continue-on-error: true
+
+      # --- Upload results (separate categories so one doesn't overwrite the other) ---
+      - name: Upload Snyk Open Source results
+        if: always() && hashFiles('snyk-oss.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: snyk-oss.sarif
+          category: snyk-open-source
+
+      - name: Upload Snyk Code results
+        if: always() && hashFiles('snyk-code.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: snyk-code.sarif
+          category: snyk-code
+
+      # --- Gate: fail only after both scans ran and uploaded ---
+      - name: Enforce security gate
+        if: steps.oss.outcome == 'failure' || steps.code.outcome == 'failure'
+        run: |
+          echo "::error::Snyk found issues at or above '$SEVERITY', or a scan could not complete."
+          exit 1
