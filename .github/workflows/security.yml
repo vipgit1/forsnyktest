@@ -49,7 +49,10 @@ jobs:
               echo "| $f | $e | $w | $n |" >> $GITHUB_STEP_SUMMARY
             fi
           done
-
+      - name: Snyk Monitor
+        if: github.ref == 'refs/heads/main'
+        run: snyk monitor --all-projects
+        continue-on-error: true
       # --- Upload results (separate categories so one doesn't overwrite the other) ---
       - name: Upload Snyk Open Source results
         if: always() && hashFiles('snyk-oss.sarif') != ''
