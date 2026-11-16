@@ -1,5 +1,5 @@
 name: "snyk code test"
-on: [push, pull_request]
+on: [push, workflow_dispatch]
 
 permissions:
   contents: read
@@ -9,24 +9,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-   
+      - uses: actions/checkout@v4
+
+      - name: What does the runner see
+        run: ls -la
+
       - uses: snyk/actions/setup@master
-      - name: Snyk Test
-        run: snyk code test --sarif > snyk-sarif2.json
+
+      - name: Snyk Code
+        run: snyk code test --sarif-file-output=snyk-sarif2.json
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-       
-      - uses: actions/checkout@v4
 
-      - name: List repo files
-        run: ls -la && git ls-files | head -50
-
-      - uses: snyk/actions/setup@master
-      # ...rest of your steps
       - name: Upload SARIF file
-      
-        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('snyk-sarif2.json') != ''
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: snyk-sarif2.json
-          
