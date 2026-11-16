@@ -35,6 +35,21 @@ jobs:
         run: snyk code test --severity-threshold=$SEVERITY --sarif-file-output=snyk-code.sarif
         continue-on-error: true
 
+      - name: Report summary
+        if: always()
+        run: |
+          echo "## Snyk scan report" >> $GITHUB_STEP_SUMMARY
+          echo "| Scan | Error (High/Critical) | Warning (Medium) | Note (Low) |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          for f in snyk-oss snyk-code; do
+            if [ -f $f.sarif ]; then
+              e=$(jq '[.runs[].results[]? | select(.level=="error")] | length' $f.sarif)
+              w=$(jq '[.runs[].results[]? | select(.level=="warning")] | length' $f.sarif)
+              n=$(jq '[.runs[].results[]? | select(.level=="note")] | length' $f.sarif)
+              echo "| $f | $e | $w | $n |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
       # --- Upload results (separate categories so one doesn't overwrite the other) ---
       - name: Upload Snyk Open Source results
         if: always() && hashFiles('snyk-oss.sarif') != ''
