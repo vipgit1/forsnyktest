@@ -1,6 +1,6 @@
 version: v1.25.0
 ignore:
-  SNYK-DEBIAN9-FREETYPE-1019584:        # replace with the ID you copied
+  SNYK-JS-MONGOOSE-18319533:        # replace with the ID you copied
     - '*':
         reason: Demo exception. Accepted for testing the policy workflow. Ticket SEC-001
         expires: 2027-02-17T00:00:00.000Z
