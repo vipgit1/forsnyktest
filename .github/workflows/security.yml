@@ -19,7 +19,7 @@ jobs:
       SEVERITY: critical        # low | medium | high | critical
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: snyk/actions/setup@master
 
