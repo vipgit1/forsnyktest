@@ -1,3 +1,4 @@
+// Second commit: testing that the summary comment updates in place.
 // DEMO ONLY: deliberately insecure sample for scanner testing.
 // Nothing here is executed: no server is started and no function is called.
 const express = require('express');
