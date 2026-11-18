@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   scan:
-    uses: vipgit1/security-templates/.github/workflows/snyk-scan.yml@main
+    uses: vipgit1/security-templates/.github/workflows/snyk-scan.yml@1ea286209e3064fffcb14291f458cf24c63f1530  # main, 2026-11-18
     with:
       severity-threshold: high
     secrets:
